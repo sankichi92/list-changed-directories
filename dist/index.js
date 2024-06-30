@@ -30456,10 +30456,10 @@ exports.gitDiffDirs = gitDiffDirs;
 exports.gitLsDirs = gitLsDirs;
 const path_1 = __importDefault(__nccwpck_require__(1017));
 const exec = __importStar(__nccwpck_require__(7775));
-async function gitFetch(sha, silent = true) {
-    await exec.exec("git", ["fetch", "--depth=1", "origin", sha], { silent });
+async function gitFetch(sha) {
+    await exec.exec("git", ["fetch", "--depth=1", "origin", sha]);
 }
-async function gitDiffDirs(beforeSHA, afterSHA, paths, silent = true) {
+async function gitDiffDirs(beforeSHA, afterSHA, paths) {
     // https://git-scm.com/docs/gitglossary/#Documentation/gitglossary.txt-glob
     const globEnabledPaths = paths.map((path) => path.includes("**") ? `:(glob)${path}` : path);
     let stdout = "";
@@ -30471,24 +30471,24 @@ async function gitDiffDirs(beforeSHA, afterSHA, paths, silent = true) {
         "--",
         ...globEnabledPaths,
     ], {
-        silent,
         listeners: {
             stdout: (data) => (stdout += data.toString()),
         },
     });
+    console.log(); // Add a newline since git diff -z doesn't end with a newline
     const files = stdout.split("\0").filter((file) => file.length > 0);
     const dirs = files.map((file) => path_1.default.dirname(file));
     return [...new Set(dirs)];
 }
-async function gitLsDirs(paths, silent = true) {
+async function gitLsDirs(paths) {
     const globEnabledPaths = paths.map((path) => path.includes("**") ? `:(glob)${path}` : path);
     let stdout = "";
     await exec.exec("git", ["ls-files", "-z", "--", ...globEnabledPaths], {
-        silent,
         listeners: {
             stdout: (data) => (stdout += data.toString()),
         },
     });
+    console.log(); // Add a newline since git ls-files -z doesn't end with a newline
     const files = stdout.split("\0").filter((file) => file.length > 0);
     const dirs = files.map((file) => path_1.default.dirname(file));
     return [...new Set(dirs)];
@@ -30556,9 +30556,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.run = run;
+const path_1 = __importDefault(__nccwpck_require__(1017));
 const core = __importStar(__nccwpck_require__(9093));
 const github = __importStar(__nccwpck_require__(5942));
-const path_1 = __importDefault(__nccwpck_require__(1017));
 const git_1 = __nccwpck_require__(3555);
 const github_1 = __nccwpck_require__(8469);
 async function run() {
@@ -30566,16 +30566,19 @@ async function run() {
         if (!["push", "pull_request"].includes(github.context.eventName)) {
             throw new Error("This action is only available for `push` and `pull_request` events.");
         }
-        const isDebug = core.isDebug();
+        core.startGroup("Fetching git commits");
         const [beforeSHA, afterSHA] = (0, github_1.getBeforeAndAfterSHA)(github.context);
         for (const sha of [beforeSHA, afterSHA]) {
-            await (0, git_1.gitFetch)(sha, !isDebug);
+            await (0, git_1.gitFetch)(sha);
         }
-        console.log(`Comparing: ${beforeSHA}..${afterSHA}`);
+        core.endGroup();
         const targetFile = core.getInput("target-file", { required: true });
         const targetDirs = core.getMultilineInput("target-directories");
-        const changedDirs = await (0, git_1.gitDiffDirs)(beforeSHA, afterSHA, targetDirs.map((dir) => path_1.default.join(dir, targetFile)), !isDebug);
-        console.log(`Changed directories: ${changedDirs}`);
+        const targetPaths = targetDirs.map((dir) => path_1.default.join(dir, targetFile));
+        core.startGroup("Comparing git commits");
+        const changedDirs = await (0, git_1.gitDiffDirs)(beforeSHA, afterSHA, targetPaths);
+        core.endGroup();
+        core.info(`Changed directories: ${changedDirs}`);
         core.setOutput("changed-directories", changedDirs);
     }
     catch (error) {
