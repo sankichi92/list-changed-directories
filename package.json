@@ -6,11 +6,14 @@
   },
   "packageManager": "pnpm@9.5.0-beta.0+sha512.c2e60e7ed04e459591c982f2760cd8f7d1f48fe1ca4d46ccbbf8377df1eb2d077ace1e9d334b06250dddf23c03b4562858f77992b9a3bb4a93355aefd173df32",
   "scripts": {
-    "build": "ncc build src/index.ts --source-map --license licenses.txt"
+    "build": "ncc build src/index.ts --source-map --license licenses.txt",
+    "fmt": "prettier --write .",
+    "lint": "prettier --check ."
   },
   "devDependencies": {
     "@types/node": "^20.14.9",
     "@vercel/ncc": "^0.38.1",
+    "prettier": "^3.3.2",
     "typescript": "^5.5.2"
   }
 }
