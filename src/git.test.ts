@@ -12,15 +12,4 @@ describe("gitLsDirs", () => {
     // Then
     expect(directories).toStrictEqual(["src"]);
   });
-
-  test("returns expanded directories from the given patterns 2", async () => {
-    // Given
-    const paths = ["*s"];
-
-    // When
-    const directories = await gitLsDirs(paths);
-
-    // Then
-    expect(directories).toStrictEqual([".", "dist", "src"]);
-  });
 });

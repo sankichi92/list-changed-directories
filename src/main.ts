@@ -14,11 +14,14 @@ export async function run() {
       );
     }
 
+    const isDebug = core.isDebug();
+
     const targetFile = core.getInput("target-file", { required: true });
     const targetDirs = core.getMultilineInput("target-directories");
 
     const candidateDirs = await gitLsDirs(
       targetDirs.map((dir) => path.join(dir, targetFile)),
+      isDebug,
     );
 
     if (candidateDirs.length === 0) {
@@ -35,9 +38,12 @@ export async function run() {
       await gitFetch(sha);
     }
 
-    const changedDirs = candidateDirs.filter(async (dir) => {
-      return await gitDiffExists(beforeSHA, afterSHA, dir);
-    });
+    const isChanged = await Promise.all(
+      candidateDirs.map((dir) =>
+        gitDiffExists(beforeSHA, afterSHA, dir, isDebug),
+      ),
+    );
+    const changedDirs = candidateDirs.filter((_, i) => isChanged[i]);
 
     console.log(`Changed directories: ${changedDirs}`);
 

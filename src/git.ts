@@ -1,10 +1,10 @@
 import * as exec from "@actions/exec";
 import path from "path";
 
-export async function gitLsDirs(paths: string[]) {
+export async function gitLsDirs(paths: string[], isDebug: boolean = false) {
   let stdout = "";
   await exec.exec("git", ["ls-files", "-z", "--", ...paths], {
-    silent: true,
+    silent: !isDebug,
     listeners: {
       stdout: (data) => {
         stdout += data.toString();
@@ -25,12 +25,13 @@ export async function gitDiffExists(
   beforeSHA: string,
   afterSHA: string,
   dir: string,
+  isDebug: boolean = false,
 ) {
   const result = await exec.exec(
     "git",
     ["diff", "--exit-code", "--quiet", `${beforeSHA}..${afterSHA}`, "--", dir],
     {
-      silent: true,
+      silent: !isDebug,
       ignoreReturnCode: true,
     },
   );

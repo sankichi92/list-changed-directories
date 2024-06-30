@@ -30456,10 +30456,10 @@ exports.gitFetch = gitFetch;
 exports.gitDiffExists = gitDiffExists;
 const exec = __importStar(__nccwpck_require__(7775));
 const path_1 = __importDefault(__nccwpck_require__(1017));
-async function gitLsDirs(paths) {
+async function gitLsDirs(paths, isDebug = false) {
     let stdout = "";
     await exec.exec("git", ["ls-files", "-z", "--", ...paths], {
-        silent: true,
+        silent: !isDebug,
         listeners: {
             stdout: (data) => {
                 stdout += data.toString();
@@ -30473,9 +30473,9 @@ async function gitLsDirs(paths) {
 async function gitFetch(sha) {
     await exec.exec("git", ["fetch", "--depth=1", "origin", sha]);
 }
-async function gitDiffExists(beforeSHA, afterSHA, dir) {
+async function gitDiffExists(beforeSHA, afterSHA, dir, isDebug = false) {
     const result = await exec.exec("git", ["diff", "--exit-code", "--quiet", `${beforeSHA}..${afterSHA}`, "--", dir], {
-        silent: true,
+        silent: !isDebug,
         ignoreReturnCode: true,
     });
     return result !== 0;
@@ -30553,9 +30553,10 @@ async function run() {
         if (!["push", "pull_request"].includes(github.context.eventName)) {
             throw new Error("This action is only available for `push` and `pull_request` events.");
         }
+        const isDebug = core.isDebug();
         const targetFile = core.getInput("target-file", { required: true });
         const targetDirs = core.getMultilineInput("target-directories");
-        const candidateDirs = await (0, git_1.gitLsDirs)(targetDirs.map((dir) => path_1.default.join(dir, targetFile)));
+        const candidateDirs = await (0, git_1.gitLsDirs)(targetDirs.map((dir) => path_1.default.join(dir, targetFile)), isDebug);
         if (candidateDirs.length === 0) {
             console.warn("No candidate directories found.");
             core.setOutput("directories", []);
@@ -30567,9 +30568,8 @@ async function run() {
         for (const sha of [beforeSHA, afterSHA]) {
             await (0, git_1.gitFetch)(sha);
         }
-        const changedDirs = candidateDirs.filter(async (dir) => {
-            return await (0, git_1.gitDiffExists)(beforeSHA, afterSHA, dir);
-        });
+        const isChanged = await Promise.all(candidateDirs.map((dir) => (0, git_1.gitDiffExists)(beforeSHA, afterSHA, dir, isDebug)));
+        const changedDirs = candidateDirs.filter((_, i) => isChanged[i]);
         console.log(`Changed directories: ${changedDirs}`);
         core.setOutput("changed-directories", changedDirs);
     }
