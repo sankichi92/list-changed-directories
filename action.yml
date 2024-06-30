@@ -1,0 +1,16 @@
+name: "list-changed-directories"
+description: "Outputs a list of changed directories from a set of candidate directories"
+
+inputs:
+  directories:
+    description: "A list of candidate directories to check for changes"
+    required: true
+    default: "**/*"
+
+outputs:
+  directories:
+    description: "A list of directories that have changed"
+
+runs:
+  using: "node20"
+  main: "src/index.js"

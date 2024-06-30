@@ -1,0 +1,17 @@
+name: CI
+
+on:
+  pull_request:
+    branches: ["main"]
+  push:
+    branches: ["main"]
+
+jobs:
+  run-self:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4.1.7
+
+      - name: Run self
+        uses: ./
