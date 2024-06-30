@@ -1,9 +1,10 @@
+import path from "path";
+
 import * as core from "@actions/core";
 import * as github from "@actions/github";
 
-import { gitDiffExists, gitFetch } from "./git";
+import { gitDiffExists, gitFetch, gitLsDirs } from "./git";
 import { getBeforeAndAfterSHA } from "./github";
-import { getCandidateDirectories } from "./path";
 
 export async function run() {
   try {
@@ -13,35 +14,34 @@ export async function run() {
       );
     }
 
-    const targetDirectories = core.getMultilineInput("target-directories");
+    const targetDirs = core.getMultilineInput("target-directories");
     const targetFile = core.getInput("target-file");
 
-    const candidateDirectories = await getCandidateDirectories(
-      targetDirectories,
-      targetFile,
+    const candidateDirs = await gitLsDirs(
+      targetDirs.map((dir) => path.join(dir, targetFile)),
     );
 
-    if (candidateDirectories.length === 0) {
-      console.log("No candidate directories found.");
+    if (candidateDirs.length === 0) {
+      console.warn("No candidate directories found.");
       core.setOutput("directories", []);
       return;
     }
 
-    console.log("Candidate directories:");
-    for (const dir of candidateDirectories) {
-      console.log(`- ${dir}`);
-    }
+    console.log(`Candidate directories: ${candidateDirs}`);
 
+    console.log("Fetching changes...");
     const [beforeSHA, afterSHA] = getBeforeAndAfterSHA(github.context);
     for (const sha of [beforeSHA, afterSHA]) {
       await gitFetch(sha);
     }
 
-    const changedDirectories = candidateDirectories.filter(async (dir) => {
+    const changedDirs = candidateDirs.filter(async (dir) => {
       return await gitDiffExists(beforeSHA, afterSHA, dir);
     });
 
-    core.setOutput("directories", changedDirectories);
+    console.log(`Changed directories: ${changedDirs}`);
+
+    core.setOutput("changed-directories", changedDirs);
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message);
   }

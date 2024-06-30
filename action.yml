@@ -4,14 +4,15 @@ description: "Outputs a list of changed directories"
 inputs:
   target-directories:
     description: "A list of directories to check for changes"
-    default: "*"
+    default: |
+      **
   target-file:
     description: "The file that must be included in the output directories"
     default: "*"
 
 outputs:
-  directories:
-    description: "A list of directories that have changed"
+  changed-directories:
+    description: "A list of directories that have changed as a JSON string"
 
 runs:
   using: "node20"

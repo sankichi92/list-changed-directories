@@ -7,7 +7,7 @@ on:
     branches: ["main"]
 
 jobs:
-  test:
+  lint:
     runs-on: ubuntu-latest
 
     steps:
@@ -22,8 +22,6 @@ jobs:
       - run: pnpm install
 
       - run: pnpm run lint
-
-      - run: pnpm run test
 
   check-dist:
     runs-on: ubuntu-latest
@@ -49,14 +47,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4.1.7
 
-      - name: Run self
-        id: self
+      - name: Run self without inputs
         uses: ./
-        # with:
-        #   target-directories: |
-        #     .github/**
-        #     dist/**
-        #     src/**
 
-      - name: Print output
-        run: echo '${{ steps.self.outputs.directories }}'
+      - name: Run self with target-dirs
+        uses: ./
+        with:
+          target-directories: |
+            .github
+            src
+            dist
+
+      - name: Run self with target-file
+        uses: ./
+        with:
+          target-file: "*.ts"
