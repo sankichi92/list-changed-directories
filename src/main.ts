@@ -1,7 +1,8 @@
 import * as core from "@actions/core";
 import * as github from "@actions/github";
 
-import { gitDiffExists, gitFetch, gitLsDirs } from "./git";
+import path from "path";
+import { gitDiffDirs, gitFetch } from "./git";
 import { getBeforeAndAfterSHA } from "./github";
 
 export async function run() {
@@ -13,11 +14,6 @@ export async function run() {
     }
 
     const isDebug = core.isDebug();
-    const targetFile = core.getInput("target-file", { required: true });
-    const targetDirs = core.getMultilineInput("target-directories");
-
-    const candidateDirs = await gitLsDirs(targetDirs, targetFile, !isDebug);
-    console.log(`Candidate directories: ${candidateDirs}`);
 
     const [beforeSHA, afterSHA] = getBeforeAndAfterSHA(github.context);
     for (const sha of [beforeSHA, afterSHA]) {
@@ -25,12 +21,15 @@ export async function run() {
     }
     console.log(`Comparing: ${beforeSHA}..${afterSHA}`);
 
-    const isChanged = await Promise.all(
-      candidateDirs.map((dir) =>
-        gitDiffExists(beforeSHA, afterSHA, dir, !isDebug),
-      ),
+    const targetFile = core.getInput("target-file", { required: true });
+    const targetDirs = core.getMultilineInput("target-directories");
+
+    const changedDirs = await gitDiffDirs(
+      beforeSHA,
+      afterSHA,
+      targetDirs.map((dir) => path.join(dir, targetFile)),
+      !isDebug,
     );
-    const changedDirs = candidateDirs.filter((_, i) => isChanged[i]);
     console.log(`Changed directories: ${changedDirs}`);
 
     core.setOutput("changed-directories", changedDirs);
