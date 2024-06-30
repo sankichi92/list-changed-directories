@@ -1,3 +1,3 @@
 # list-changed-directories
 
-Custom action that outputs only the changed directories
+Custom GitHub action that outputs a list of changed directories that include a target file.

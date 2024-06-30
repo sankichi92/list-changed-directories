@@ -47,18 +47,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4.1.7
 
-      - name: Run self without inputs
-        uses: ./
-
-      - name: Run self with target-dirs
+      - name: Run self
         uses: ./
         with:
-          target-directories: |
-            .github
-            src
-            dist
-
-      - name: Run self with target-file
-        uses: ./
-        with:
-          target-file: "*.ts"
+          target-file: "*s"

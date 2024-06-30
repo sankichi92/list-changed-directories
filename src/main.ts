@@ -14,8 +14,8 @@ export async function run() {
       );
     }
 
+    const targetFile = core.getInput("target-file", { required: true });
     const targetDirs = core.getMultilineInput("target-directories");
-    const targetFile = core.getInput("target-file");
 
     const candidateDirs = await gitLsDirs(
       targetDirs.map((dir) => path.join(dir, targetFile)),

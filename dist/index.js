@@ -30553,8 +30553,8 @@ async function run() {
         if (!["push", "pull_request"].includes(github.context.eventName)) {
             throw new Error("This action is only available for `push` and `pull_request` events.");
         }
+        const targetFile = core.getInput("target-file", { required: true });
         const targetDirs = core.getMultilineInput("target-directories");
-        const targetFile = core.getInput("target-file");
         const candidateDirs = await (0, git_1.gitLsDirs)(targetDirs.map((dir) => path_1.default.join(dir, targetFile)));
         if (candidateDirs.length === 0) {
             console.warn("No candidate directories found.");

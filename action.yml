@@ -1,14 +1,13 @@
 name: "list-changed-directories"
-description: "Outputs a list of changed directories"
+description: "Outputs a list of changed directories that include a target file"
 
 inputs:
-  target-directories:
-    description: "A list of directories to check for changes"
-    default: |
-      **
   target-file:
-    description: "The file that must be included in the output directories"
-    default: "*"
+    description: "The file pattern that must be included in the output directories"
+    required: true
+  target-directories:
+    description: "A list of directory patterns to detect changes in, separated by newlines"
+    default: "**"
 
 outputs:
   changed-directories:
