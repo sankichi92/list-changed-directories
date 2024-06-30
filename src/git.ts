@@ -1,17 +1,23 @@
-import * as exec from "@actions/exec";
 import path from "path";
 
-export async function gitLsDirs(paths: string[], isDebug: boolean = false) {
-  // https://git-scm.com/docs/gitglossary/#Documentation/gitglossary.txt-glob
-  const globEnabledPaths = paths.map((path) => `:(glob)${path}`);
+import * as exec from "@actions/exec";
+
+export async function gitLsDirs(
+  targetDirs: string[],
+  targetFile: string,
+  silent: boolean = true,
+) {
+  const targetPatterns = targetDirs.map((dir) => {
+    // https://git-scm.com/docs/gitglossary/#Documentation/gitglossary.txt-glob
+    const globEnabledDir = dir.includes("**") ? `:(glob)${dir}` : dir;
+    return path.join(globEnabledDir, targetFile);
+  });
 
   let stdout = "";
-  await exec.exec("git", ["ls-files", "-z", "--", ...globEnabledPaths], {
-    silent: !isDebug,
+  await exec.exec("git", ["ls-files", "-z", "--", ...targetPatterns], {
+    silent,
     listeners: {
-      stdout: (data) => {
-        stdout += data.toString();
-      },
+      stdout: (data) => (stdout += data.toString()),
     },
   });
 
@@ -20,23 +26,20 @@ export async function gitLsDirs(paths: string[], isDebug: boolean = false) {
   return [...new Set(dirs)];
 }
 
-export async function gitFetch(sha: string) {
-  await exec.exec("git", ["fetch", "--depth=1", "origin", sha]);
+export async function gitFetch(sha: string, silent: boolean = true) {
+  await exec.exec("git", ["fetch", "--depth=1", "origin", sha], { silent });
 }
 
 export async function gitDiffExists(
   beforeSHA: string,
   afterSHA: string,
   dir: string,
-  isDebug: boolean = false,
+  silent: boolean = true,
 ) {
   const result = await exec.exec(
     "git",
     ["diff", "--exit-code", "--quiet", `${beforeSHA}..${afterSHA}`, "--", dir],
-    {
-      silent: !isDebug,
-      ignoreReturnCode: true,
-    },
+    { silent, ignoreReturnCode: true },
   );
   return result !== 0;
 }

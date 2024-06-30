@@ -30454,32 +30454,30 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.gitLsDirs = gitLsDirs;
 exports.gitFetch = gitFetch;
 exports.gitDiffExists = gitDiffExists;
-const exec = __importStar(__nccwpck_require__(7775));
 const path_1 = __importDefault(__nccwpck_require__(1017));
-async function gitLsDirs(paths, isDebug = false) {
-    // https://git-scm.com/docs/gitglossary/#Documentation/gitglossary.txt-glob
-    const globEnabledPaths = paths.map((path) => `:(glob)${path}`);
+const exec = __importStar(__nccwpck_require__(7775));
+async function gitLsDirs(targetDirs, targetFile, silent = true) {
+    const targetPatterns = targetDirs.map((dir) => {
+        // https://git-scm.com/docs/gitglossary/#Documentation/gitglossary.txt-glob
+        const globEnabledDir = dir.includes("**") ? `:(glob)${dir}` : dir;
+        return path_1.default.join(globEnabledDir, targetFile);
+    });
     let stdout = "";
-    await exec.exec("git", ["ls-files", "-z", "--", ...globEnabledPaths], {
-        silent: !isDebug,
+    await exec.exec("git", ["ls-files", "-z", "--", ...targetPatterns], {
+        silent,
         listeners: {
-            stdout: (data) => {
-                stdout += data.toString();
-            },
+            stdout: (data) => (stdout += data.toString()),
         },
     });
     const files = stdout.split("\0").filter((file) => file.length > 0);
     const dirs = files.map((file) => path_1.default.dirname(file));
     return [...new Set(dirs)];
 }
-async function gitFetch(sha) {
-    await exec.exec("git", ["fetch", "--depth=1", "origin", sha]);
+async function gitFetch(sha, silent = true) {
+    await exec.exec("git", ["fetch", "--depth=1", "origin", sha], { silent });
 }
-async function gitDiffExists(beforeSHA, afterSHA, dir, isDebug = false) {
-    const result = await exec.exec("git", ["diff", "--exit-code", "--quiet", `${beforeSHA}..${afterSHA}`, "--", dir], {
-        silent: !isDebug,
-        ignoreReturnCode: true,
-    });
+async function gitDiffExists(beforeSHA, afterSHA, dir, silent = true) {
+    const result = await exec.exec("git", ["diff", "--exit-code", "--quiet", `${beforeSHA}..${afterSHA}`, "--", dir], { silent, ignoreReturnCode: true });
     return result !== 0;
 }
 
@@ -30540,12 +30538,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.run = run;
-const path_1 = __importDefault(__nccwpck_require__(1017));
 const core = __importStar(__nccwpck_require__(9093));
 const github = __importStar(__nccwpck_require__(5942));
 const git_1 = __nccwpck_require__(3555);
@@ -30558,19 +30552,14 @@ async function run() {
         const isDebug = core.isDebug();
         const targetFile = core.getInput("target-file", { required: true });
         const targetDirs = core.getMultilineInput("target-directories");
-        const candidateDirs = await (0, git_1.gitLsDirs)(targetDirs.map((dir) => path_1.default.join(dir, targetFile)), isDebug);
-        if (candidateDirs.length === 0) {
-            console.warn("No candidate directories found.");
-            core.setOutput("directories", []);
-            return;
-        }
+        const candidateDirs = await (0, git_1.gitLsDirs)(targetDirs, targetFile, !isDebug);
         console.log(`Candidate directories: ${candidateDirs}`);
-        console.log("Fetching changes...");
         const [beforeSHA, afterSHA] = (0, github_1.getBeforeAndAfterSHA)(github.context);
         for (const sha of [beforeSHA, afterSHA]) {
-            await (0, git_1.gitFetch)(sha);
+            await (0, git_1.gitFetch)(sha, !isDebug);
         }
-        const isChanged = await Promise.all(candidateDirs.map((dir) => (0, git_1.gitDiffExists)(beforeSHA, afterSHA, dir, isDebug)));
+        console.log(`Comparing: ${beforeSHA}..${afterSHA}`);
+        const isChanged = await Promise.all(candidateDirs.map((dir) => (0, git_1.gitDiffExists)(beforeSHA, afterSHA, dir, !isDebug)));
         const changedDirs = candidateDirs.filter((_, i) => isChanged[i]);
         console.log(`Changed directories: ${changedDirs}`);
         core.setOutput("changed-directories", changedDirs);

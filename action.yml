@@ -3,15 +3,16 @@ description: "Outputs a list of changed directories that include a target file"
 
 inputs:
   target-file:
-    description: "The file pattern that must be included in the output directories"
+    description: "Filename pattern that the target directories must include"
     required: true
   target-directories:
-    description: "A list of directory patterns to detect changes in, separated by newlines"
-    default: "**"
+    description: "List of directory patterns to detect changes in, separated by newlines"
+    default: |-
+      **
 
 outputs:
   changed-directories:
-    description: "A list of directories that have changed as a JSON string"
+    description: "List of changed directories as a JSON string"
 
 runs:
   using: "node20"
