@@ -4,8 +4,7 @@ description: "Outputs a list of changed directories"
 inputs:
   target-directories:
     description: "A list of directories to check for changes"
-    default: |
-      **
+    default: "*"
   target-file:
     description: "The file that must be included in the output directories"
     default: "*"

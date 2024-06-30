@@ -52,8 +52,11 @@ jobs:
       - name: Run self
         id: self
         uses: ./
-        with:
-          target-file: "*.ts"
+        # with:
+        #   target-directories: |
+        #     .github/**
+        #     dist/**
+        #     src/**
 
       - name: Print output
-        run: echo "${{ steps.self.outputs.directories }}"
+        run: echo '${{ steps.self.outputs.directories }}'
