@@ -5,7 +5,8 @@ inputs:
   directories:
     description: "A list of candidate directories to check for changes"
     required: true
-    default: "**/*"
+    default: |
+      **/*
 
 outputs:
   directories:

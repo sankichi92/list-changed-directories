@@ -48,4 +48,8 @@ jobs:
       - uses: actions/checkout@v4.1.7
 
       - name: Run self
+        id: self
         uses: ./
+
+      - name: Print output
+        run: echo "${{ steps.self.outputs.directories }}"
