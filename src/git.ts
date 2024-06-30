@@ -2,8 +2,11 @@ import * as exec from "@actions/exec";
 import path from "path";
 
 export async function gitLsDirs(paths: string[], isDebug: boolean = false) {
+  // https://git-scm.com/docs/gitglossary/#Documentation/gitglossary.txt-glob
+  const globEnabledPaths = paths.map((path) => `:(glob)${path}`);
+
   let stdout = "";
-  await exec.exec("git", ["ls-files", "-z", "--", ...paths], {
+  await exec.exec("git", ["ls-files", "-z", "--", ...globEnabledPaths], {
     silent: !isDebug,
     listeners: {
       stdout: (data) => {

@@ -30457,8 +30457,10 @@ exports.gitDiffExists = gitDiffExists;
 const exec = __importStar(__nccwpck_require__(7775));
 const path_1 = __importDefault(__nccwpck_require__(1017));
 async function gitLsDirs(paths, isDebug = false) {
+    // https://git-scm.com/docs/gitglossary/#Documentation/gitglossary.txt-glob
+    const globEnabledPaths = paths.map((path) => `:(glob)${path}`);
     let stdout = "";
-    await exec.exec("git", ["ls-files", "-z", "--", ...paths], {
+    await exec.exec("git", ["ls-files", "-z", "--", ...globEnabledPaths], {
         silent: !isDebug,
         listeners: {
             stdout: (data) => {
