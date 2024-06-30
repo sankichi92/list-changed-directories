@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","mappings":";;AAAA;AACA;;;;ACDA","sources":["../webpack/runtime/compat",".././src/index.js"],"sourcesContent":["\nif (typeof __webpack_require__ !== 'undefined') __webpack_require__.ab = __dirname + \"/\";","console.log(\"Hello, world!\");\n"],"names":[],"sourceRoot":""}
