@@ -20,7 +20,7 @@ export async function run() {
 
     core.startGroup("List candidate directories");
     const candidateDirs = await gitLsDirs(targetPaths);
-    core.info(`Candidate directories: ${candidateDirs}`);
+    core.info(`Candidate directories: ${JSON.stringify(candidateDirs)}`);
     core.endGroup();
 
     core.startGroup("Fetching the base commit");
@@ -35,7 +35,12 @@ export async function run() {
     const changedDirs = candidateDirs.filter((_, i) => isChanged[i]);
     core.endGroup();
 
-    core.info(`Changed directories: ${changedDirs}`);
+    if (changedDirs.length === 0) {
+      core.info("No directories have changed.");
+    } else {
+      core.info(`Changed directories: ${JSON.stringify(changedDirs)}`);
+    }
+
     core.setOutput("changed-directories", changedDirs);
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message);
