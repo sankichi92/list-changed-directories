@@ -30451,25 +30451,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.gitFetch = gitFetch;
-exports.gitDiffDirs = gitDiffDirs;
 exports.gitLsDirs = gitLsDirs;
+exports.gitFetch = gitFetch;
+exports.gitDiffExists = gitDiffExists;
 const path_1 = __importDefault(__nccwpck_require__(1017));
 const exec = __importStar(__nccwpck_require__(7775));
-async function gitFetch(sha) {
-    await exec.exec("git", ["fetch", "--depth=1", "origin", sha]);
-}
-function gitDiffDirs(sha, paths) {
-    return gitDirs(["diff", sha, "--name-only"], paths);
-}
-function gitLsDirs(paths) {
-    return gitDirs(["ls-files"], paths);
-}
-async function gitDirs(gitSubcommand, paths) {
+async function gitLsDirs(paths) {
     // https://git-scm.com/docs/gitglossary/#Documentation/gitglossary.txt-glob
     const globEnabledPaths = paths.map((path) => path.includes("**") ? `:(glob)${path}` : path);
     let stdout = "";
-    await exec.exec("git", [...gitSubcommand, "-z", "--", ...globEnabledPaths], {
+    await exec.exec("git", ["ls-files", "-z", "--", ...globEnabledPaths], {
         listeners: {
             stdout: (data) => (stdout += data.toString()),
         },
@@ -30478,6 +30469,13 @@ async function gitDirs(gitSubcommand, paths) {
     const files = stdout.split("\0").filter((file) => file.length > 0);
     const dirs = files.map((file) => path_1.default.dirname(file));
     return [...new Set(dirs)];
+}
+async function gitFetch(sha) {
+    await exec.exec("git", ["fetch", "--depth=1", "origin", sha]);
+}
+async function gitDiffExists(commit, path) {
+    const exitCode = await exec.exec("git", ["diff", "--exit-code", "--quiet", commit, "--", path], { ignoreReturnCode: true });
+    return exitCode !== 0;
 }
 
 
@@ -30552,15 +30550,20 @@ async function run() {
         if (!["push", "pull_request"].includes(github.context.eventName)) {
             throw new Error("This action is only available for `push` and `pull_request` events.");
         }
+        const targetFile = core.getInput("target-file", { required: true });
+        const targetDirs = core.getMultilineInput("target-directories");
+        const targetPaths = targetDirs.map((dir) => path_1.default.join(dir, targetFile));
+        core.startGroup("List candidate directories");
+        const candidateDirs = await (0, git_1.gitLsDirs)(targetPaths);
+        core.info(`Candidate directories: ${candidateDirs}`);
+        core.endGroup();
         core.startGroup("Fetching the base commit");
         const baseRef = (0, github_1.getBaseRef)(github.context);
         await (0, git_1.gitFetch)(baseRef);
         core.endGroup();
-        const targetFile = core.getInput("target-file", { required: true });
-        const targetDirs = core.getMultilineInput("target-directories");
-        const targetPaths = targetDirs.map((dir) => path_1.default.join(dir, targetFile));
         core.startGroup("Comparing git diff");
-        const changedDirs = await (0, git_1.gitDiffDirs)(baseRef, targetPaths);
+        const isChanged = await Promise.all(candidateDirs.map((dir) => (0, git_1.gitDiffExists)(baseRef, dir)));
+        const changedDirs = candidateDirs.filter((_, i) => isChanged[i]);
         core.endGroup();
         core.info(`Changed directories: ${changedDirs}`);
         core.setOutput("changed-directories", changedDirs);

@@ -3,7 +3,7 @@ import path from "path";
 import * as core from "@actions/core";
 import * as github from "@actions/github";
 
-import { gitDiffDirs, gitFetch } from "./git";
+import { gitDiffExists, gitFetch, gitLsDirs } from "./git";
 import { getBaseRef } from "./github";
 
 export async function run() {
@@ -14,17 +14,25 @@ export async function run() {
       );
     }
 
+    const targetFile = core.getInput("target-file", { required: true });
+    const targetDirs = core.getMultilineInput("target-directories");
+    const targetPaths = targetDirs.map((dir) => path.join(dir, targetFile));
+
+    core.startGroup("List candidate directories");
+    const candidateDirs = await gitLsDirs(targetPaths);
+    core.info(`Candidate directories: ${candidateDirs}`);
+    core.endGroup();
+
     core.startGroup("Fetching the base commit");
     const baseRef = getBaseRef(github.context);
     await gitFetch(baseRef);
     core.endGroup();
 
-    const targetFile = core.getInput("target-file", { required: true });
-    const targetDirs = core.getMultilineInput("target-directories");
-    const targetPaths = targetDirs.map((dir) => path.join(dir, targetFile));
-
     core.startGroup("Comparing git diff");
-    const changedDirs = await gitDiffDirs(baseRef, targetPaths);
+    const isChanged = await Promise.all(
+      candidateDirs.map((dir) => gitDiffExists(baseRef, dir)),
+    );
+    const changedDirs = candidateDirs.filter((_, i) => isChanged[i]);
     core.endGroup();
 
     core.info(`Changed directories: ${changedDirs}`);
