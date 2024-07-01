@@ -4,7 +4,7 @@ import * as core from "@actions/core";
 import * as github from "@actions/github";
 
 import { gitDiffDirs, gitFetch } from "./git";
-import { getBeforeAndAfterSHA } from "./github";
+import { getBaseRef } from "./github";
 
 export async function run() {
   try {
@@ -14,19 +14,17 @@ export async function run() {
       );
     }
 
-    core.startGroup("Fetching git commits");
-    const [beforeSHA, afterSHA] = getBeforeAndAfterSHA(github.context);
-    for (const sha of [beforeSHA, afterSHA]) {
-      await gitFetch(sha);
-    }
+    core.startGroup("Fetching the base commit");
+    const baseRef = getBaseRef(github.context);
+    await gitFetch(baseRef);
     core.endGroup();
 
     const targetFile = core.getInput("target-file", { required: true });
     const targetDirs = core.getMultilineInput("target-directories");
     const targetPaths = targetDirs.map((dir) => path.join(dir, targetFile));
 
-    core.startGroup("Comparing git commits");
-    const changedDirs = await gitDiffDirs(beforeSHA, afterSHA, targetPaths);
+    core.startGroup("Comparing git diff");
+    const changedDirs = await gitDiffDirs(baseRef, targetPaths);
     core.endGroup();
 
     core.info(`Changed directories: ${changedDirs}`);

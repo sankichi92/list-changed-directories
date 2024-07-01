@@ -6,12 +6,8 @@ export async function gitFetch(sha: string) {
   await exec.exec("git", ["fetch", "--depth=1", "origin", sha]);
 }
 
-export function gitDiffDirs(
-  beforeSHA: string,
-  afterSHA: string,
-  paths: string[],
-) {
-  return gitDirs(["diff", "--name-only", `${beforeSHA}..${afterSHA}`], paths);
+export function gitDiffDirs(sha: string, paths: string[]) {
+  return gitDirs(["diff", sha, "--name-only"], paths);
 }
 
 export function gitLsDirs(paths: string[]) {

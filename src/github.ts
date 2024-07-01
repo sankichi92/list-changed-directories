@@ -1,15 +1,15 @@
 import type { Context } from "@actions/github/lib/context";
 import type { PullRequestEvent, PushEvent } from "@octokit/webhooks-types";
 
-export function getBeforeAndAfterSHA(context: Context): [string, string] {
+export function getBaseRef(context: Context) {
   switch (context.eventName) {
     case "pull_request": {
       const payload = context.payload as PullRequestEvent;
-      return [payload.pull_request.base.sha, payload.pull_request.head.sha];
+      return payload.pull_request.base.ref;
     }
     case "push": {
       const payload = context.payload as PushEvent;
-      return [payload.before, payload.after];
+      return payload.before;
     }
     default: {
       throw new Error(`Unexpected event: ${context.eventName}`);

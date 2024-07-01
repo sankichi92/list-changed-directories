@@ -30459,8 +30459,8 @@ const exec = __importStar(__nccwpck_require__(7775));
 async function gitFetch(sha) {
     await exec.exec("git", ["fetch", "--depth=1", "origin", sha]);
 }
-function gitDiffDirs(beforeSHA, afterSHA, paths) {
-    return gitDirs(["diff", "--name-only", `${beforeSHA}..${afterSHA}`], paths);
+function gitDiffDirs(sha, paths) {
+    return gitDirs(["diff", sha, "--name-only"], paths);
 }
 function gitLsDirs(paths) {
     return gitDirs(["ls-files"], paths);
@@ -30489,16 +30489,16 @@ async function gitDirs(gitSubcommand, paths) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getBeforeAndAfterSHA = getBeforeAndAfterSHA;
-function getBeforeAndAfterSHA(context) {
+exports.getBaseRef = getBaseRef;
+function getBaseRef(context) {
     switch (context.eventName) {
         case "pull_request": {
             const payload = context.payload;
-            return [payload.pull_request.base.sha, payload.pull_request.head.sha];
+            return payload.pull_request.base.ref;
         }
         case "push": {
             const payload = context.payload;
-            return [payload.before, payload.after];
+            return payload.before;
         }
         default: {
             throw new Error(`Unexpected event: ${context.eventName}`);
@@ -30552,17 +30552,15 @@ async function run() {
         if (!["push", "pull_request"].includes(github.context.eventName)) {
             throw new Error("This action is only available for `push` and `pull_request` events.");
         }
-        core.startGroup("Fetching git commits");
-        const [beforeSHA, afterSHA] = (0, github_1.getBeforeAndAfterSHA)(github.context);
-        for (const sha of [beforeSHA, afterSHA]) {
-            await (0, git_1.gitFetch)(sha);
-        }
+        core.startGroup("Fetching the base commit");
+        const baseRef = (0, github_1.getBaseRef)(github.context);
+        await (0, git_1.gitFetch)(baseRef);
         core.endGroup();
         const targetFile = core.getInput("target-file", { required: true });
         const targetDirs = core.getMultilineInput("target-directories");
         const targetPaths = targetDirs.map((dir) => path_1.default.join(dir, targetFile));
-        core.startGroup("Comparing git commits");
-        const changedDirs = await (0, git_1.gitDiffDirs)(beforeSHA, afterSHA, targetPaths);
+        core.startGroup("Comparing git diff");
+        const changedDirs = await (0, git_1.gitDiffDirs)(baseRef, targetPaths);
         core.endGroup();
         core.info(`Changed directories: ${changedDirs}`);
         core.setOutput("changed-directories", changedDirs);
