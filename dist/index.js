@@ -30459,31 +30459,17 @@ const exec = __importStar(__nccwpck_require__(7775));
 async function gitFetch(sha) {
     await exec.exec("git", ["fetch", "--depth=1", "origin", sha]);
 }
-async function gitDiffDirs(beforeSHA, afterSHA, paths) {
+function gitDiffDirs(beforeSHA, afterSHA, paths) {
+    return gitDirs(["diff", "--name-only", `${beforeSHA}..${afterSHA}`], paths);
+}
+function gitLsDirs(paths) {
+    return gitDirs(["ls-files"], paths);
+}
+async function gitDirs(gitSubcommand, paths) {
     // https://git-scm.com/docs/gitglossary/#Documentation/gitglossary.txt-glob
     const globEnabledPaths = paths.map((path) => path.includes("**") ? `:(glob)${path}` : path);
     let stdout = "";
-    await exec.exec("git", [
-        "diff",
-        "--name-only",
-        "-z",
-        `${beforeSHA}..${afterSHA}`,
-        "--",
-        ...globEnabledPaths,
-    ], {
-        listeners: {
-            stdout: (data) => (stdout += data.toString()),
-        },
-    });
-    console.log(); // Add a newline since git diff -z doesn't end with a newline
-    const files = stdout.split("\0").filter((file) => file.length > 0);
-    const dirs = files.map((file) => path_1.default.dirname(file));
-    return [...new Set(dirs)];
-}
-async function gitLsDirs(paths) {
-    const globEnabledPaths = paths.map((path) => path.includes("**") ? `:(glob)${path}` : path);
-    let stdout = "";
-    await exec.exec("git", ["ls-files", "-z", "--", ...globEnabledPaths], {
+    await exec.exec("git", [...gitSubcommand, "-z", "--", ...globEnabledPaths], {
         listeners: {
             stdout: (data) => (stdout += data.toString()),
         },
