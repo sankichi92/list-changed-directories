@@ -16,7 +16,7 @@ This action can be used only on `push` and `pull_request` events.
 
 The list of changed directories as a JSON string.
 
-## Example Workflow
+## Example usage
 
 This workflow runs `bundle exec rake` in every directory that has changed and includes `Gemfile`:
 
@@ -52,10 +52,6 @@ jobs:
       matrix:
         dir: ${{ fromJSON(needs.list-target-dirs.outputs.dirs) }}
 
-    defaults:
-      run:
-        working-directory: ${{ matrix.dir }}
-
     steps:
       - uses: actions/checkout@v4
 
@@ -64,4 +60,5 @@ jobs:
           bundler-cache: true
 
       - run: bundle exec rake
+        working-directory: ${{ matrix.dir }}
 ```
