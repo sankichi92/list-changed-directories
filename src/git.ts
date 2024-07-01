@@ -1,24 +1,14 @@
-import path from "path";
-
 import * as exec from "@actions/exec";
 
-export async function gitLsDirs(paths: string[]) {
-  // https://git-scm.com/docs/gitglossary/#Documentation/gitglossary.txt-glob
-  const globEnabledPaths = paths.map((path) =>
-    path.includes("**") ? `:(glob)${path}` : path,
-  );
-
+export async function gitLsFiles(path: string) {
   let stdout = "";
-  await exec.exec("git", ["ls-files", "-z", "--", ...globEnabledPaths], {
+  await exec.exec("git", ["ls-files", "-z", "--", path], {
     listeners: {
       stdout: (data) => (stdout += data.toString()),
     },
   });
   console.log(); // Add a newline since git ls-files -z doesn't end with a newline
-
-  const files = stdout.split("\0").filter((file) => file.length > 0);
-  const dirs = files.map((file) => path.dirname(file));
-  return [...new Set(dirs)];
+  return stdout.split("\0").filter((file) => file.length > 0);
 }
 
 export async function gitFetch(sha: string) {

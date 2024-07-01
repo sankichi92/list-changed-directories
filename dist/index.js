@@ -30447,28 +30447,20 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.gitLsDirs = gitLsDirs;
+exports.gitLsFiles = gitLsFiles;
 exports.gitFetch = gitFetch;
 exports.gitDiffExists = gitDiffExists;
-const path_1 = __importDefault(__nccwpck_require__(1017));
 const exec = __importStar(__nccwpck_require__(7775));
-async function gitLsDirs(paths) {
-    // https://git-scm.com/docs/gitglossary/#Documentation/gitglossary.txt-glob
-    const globEnabledPaths = paths.map((path) => path.includes("**") ? `:(glob)${path}` : path);
+async function gitLsFiles(path) {
     let stdout = "";
-    await exec.exec("git", ["ls-files", "-z", "--", ...globEnabledPaths], {
+    await exec.exec("git", ["ls-files", "-z", "--", path], {
         listeners: {
             stdout: (data) => (stdout += data.toString()),
         },
     });
     console.log(); // Add a newline since git ls-files -z doesn't end with a newline
-    const files = stdout.split("\0").filter((file) => file.length > 0);
-    const dirs = files.map((file) => path_1.default.dirname(file));
-    return [...new Set(dirs)];
+    return stdout.split("\0").filter((file) => file.length > 0);
 }
 async function gitFetch(sha) {
     await exec.exec("git", ["fetch", "--depth=1", "origin", sha]);
@@ -30551,11 +30543,11 @@ async function run() {
             throw new Error("This action is only available for `push` and `pull_request` events.");
         }
         const targetFile = core.getInput("target-file", { required: true });
-        const targetDirs = core.getMultilineInput("target-directories");
-        const targetPaths = targetDirs.map((dir) => path_1.default.join(dir, targetFile));
-        core.startGroup("List candidate directories");
-        const candidateDirs = await (0, git_1.gitLsDirs)(targetPaths);
-        core.info(`Candidate directories: ${candidateDirs}`);
+        core.startGroup("Listing candidate directories");
+        // https://git-scm.com/docs/gitglossary/#Documentation/gitglossary.txt-glob
+        const targetFiles = await (0, git_1.gitLsFiles)(`:(glob)**/${targetFile}`);
+        const candidateDirs = [...new Set(targetFiles.map((f) => path_1.default.dirname(f)))];
+        core.info(`Candidate directories: ${JSON.stringify(candidateDirs)}`);
         core.endGroup();
         core.startGroup("Fetching the base commit");
         const baseRef = (0, github_1.getBaseRef)(github.context);
@@ -30565,7 +30557,12 @@ async function run() {
         const isChanged = await Promise.all(candidateDirs.map((dir) => (0, git_1.gitDiffExists)(baseRef, dir)));
         const changedDirs = candidateDirs.filter((_, i) => isChanged[i]);
         core.endGroup();
-        core.info(`Changed directories: ${changedDirs}`);
+        if (changedDirs.length === 0) {
+            core.info("No directories have changed.");
+        }
+        else {
+            core.info(`Changed directories: ${JSON.stringify(changedDirs)}`);
+        }
         core.setOutput("changed-directories", changedDirs);
     }
     catch (error) {

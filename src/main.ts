@@ -3,7 +3,7 @@ import path from "path";
 import * as core from "@actions/core";
 import * as github from "@actions/github";
 
-import { gitDiffExists, gitFetch, gitLsDirs } from "./git";
+import { gitDiffExists, gitFetch, gitLsFiles } from "./git";
 import { getBaseRef } from "./github";
 
 export async function run() {
@@ -15,11 +15,11 @@ export async function run() {
     }
 
     const targetFile = core.getInput("target-file", { required: true });
-    const targetDirs = core.getMultilineInput("target-directories");
-    const targetPaths = targetDirs.map((dir) => path.join(dir, targetFile));
 
-    core.startGroup("List candidate directories");
-    const candidateDirs = await gitLsDirs(targetPaths);
+    core.startGroup("Listing candidate directories");
+    // https://git-scm.com/docs/gitglossary/#Documentation/gitglossary.txt-glob
+    const targetFiles = await gitLsFiles(`:(glob)**/${targetFile}`);
+    const candidateDirs = [...new Set(targetFiles.map((f) => path.dirname(f)))];
     core.info(`Candidate directories: ${JSON.stringify(candidateDirs)}`);
     core.endGroup();
 

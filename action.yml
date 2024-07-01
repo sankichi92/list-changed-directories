@@ -1,19 +1,15 @@
-name: "list-changed-directories"
-description: "Outputs a list of changed directories that include a target file"
+name: list-changed-directories
+description: Outputs a list of changed directories that include a target file
 
 inputs:
   target-file:
-    description: "Filename pattern that the target directories must include"
+    description: File name that the output directories must include
     required: true
-  target-directories:
-    description: "List of directory patterns to detect changes in, separated by newlines"
-    default: |-
-      **
 
 outputs:
   changed-directories:
-    description: "List of changed directories as a JSON string"
+    description: List of changed directories as a JSON string
 
 runs:
-  using: "node20"
-  main: "dist/index.js"
+  using: node20
+  main: dist/index.js
