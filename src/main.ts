@@ -4,7 +4,7 @@ import * as core from "@actions/core";
 import * as github from "@actions/github";
 
 import { gitDiffExists, gitFetch, gitLsFiles } from "./git";
-import { getBaseRef } from "./github";
+import { getBaseSHA } from "./github";
 
 export async function run() {
   try {
@@ -24,13 +24,13 @@ export async function run() {
     core.endGroup();
 
     core.startGroup("Fetching the base commit");
-    const baseRef = getBaseRef(github.context);
-    await gitFetch(baseRef);
+    const baseSHA = getBaseSHA(github.context);
+    await gitFetch(baseSHA);
     core.endGroup();
 
     core.startGroup("Comparing git diff");
     const isChanged = await Promise.all(
-      candidateDirs.map((dir) => gitDiffExists(baseRef, dir)),
+      candidateDirs.map((dir) => gitDiffExists(baseSHA, dir)),
     );
     const changedDirs = candidateDirs.filter((_, i) => isChanged[i]);
     core.endGroup();
