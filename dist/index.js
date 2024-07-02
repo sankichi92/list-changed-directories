@@ -30479,12 +30479,12 @@ async function gitDiffExists(commit, path) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getBaseRef = getBaseRef;
-function getBaseRef(context) {
+exports.getBaseSHA = getBaseSHA;
+function getBaseSHA(context) {
     switch (context.eventName) {
         case "pull_request": {
             const payload = context.payload;
-            return payload.pull_request.base.ref;
+            return payload.pull_request.base.sha;
         }
         case "push": {
             const payload = context.payload;
@@ -30550,11 +30550,11 @@ async function run() {
         core.info(`Candidate directories: ${JSON.stringify(candidateDirs)}`);
         core.endGroup();
         core.startGroup("Fetching the base commit");
-        const baseRef = (0, github_1.getBaseRef)(github.context);
-        await (0, git_1.gitFetch)(baseRef);
+        const baseSHA = (0, github_1.getBaseSHA)(github.context);
+        await (0, git_1.gitFetch)(baseSHA);
         core.endGroup();
         core.startGroup("Comparing git diff");
-        const isChanged = await Promise.all(candidateDirs.map((dir) => (0, git_1.gitDiffExists)(baseRef, dir)));
+        const isChanged = await Promise.all(candidateDirs.map((dir) => (0, git_1.gitDiffExists)(baseSHA, dir)));
         const changedDirs = candidateDirs.filter((_, i) => isChanged[i]);
         core.endGroup();
         if (changedDirs.length === 0) {
