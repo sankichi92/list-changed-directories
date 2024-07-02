@@ -52,6 +52,10 @@ jobs:
       matrix:
         dir: ${{ fromJSON(needs.list-target-dirs.outputs.dirs) }}
 
+    defaults:
+      run:
+        working-directory: ${{ matrix.dir }}
+
     steps:
       - uses: actions/checkout@v4
 
@@ -60,5 +64,4 @@ jobs:
           bundler-cache: true
 
       - run: bundle exec rake
-        working-directory: ${{ matrix.dir }}
 ```
