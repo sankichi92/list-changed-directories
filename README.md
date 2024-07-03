@@ -15,11 +15,11 @@ This action works only with the `push` and `pull_request` events due to the need
 
 **Required**. A filename that must be included in the output directories.
 
-### `common-dependency-filepaths`
+### `common-dependency-paths`
 
-File paths that all directories including the `target-file` depend on.
+Paths to files that all directories including the `target-file` depend on.
 If any of these files are changed, all directories including the `target-file` are considered changed.
-Separate file paths with a newline.
+Separate paths with a newline.
 
 ## Outputs
 
@@ -50,7 +50,7 @@ jobs:
         id: list-changed-directories
         with:
           target-file: Gemfile.lock
-          common-dependency-filepaths: |-
+          common-dependency-paths: |-
             .github/workflows/ruby.yml
 
   test:
