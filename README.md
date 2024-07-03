@@ -1,8 +1,13 @@
 # list-changed-directories
 
-A custom GitHub action that outputs a list of changed directories including a target file.
+This custom GitHub Action outputs a list of directories that have changed and include a specified target file.
 
-This action can be used only on `push` and `pull_request` events.
+For example, in a monorepo managing multiple applications, this custom action can be used to run the same job only on directories that have changed.
+While a simple GitHub Actions' matrix can run the same job across multiple directories, it cannot limit execution exclusively to directories that have changed.
+Using `on.<push|pull_request>.paths` allows targeting only changed directories, but this requires to increase the number of workflows in proportional to the number of target directories.
+This custom action addresses these challenges.
+
+This action works only with the `push` and `pull_request` events due to the need for obtaining a diff.
 
 ## Inputs
 
@@ -12,8 +17,8 @@ This action can be used only on `push` and `pull_request` events.
 
 ### `common-dependency-filepaths`
 
-File paths that all directories including `target-file` depend on.
-If any of these files are changed, all directories including `target-file` are considered changed.
+File paths that all directories including the `target-file` depend on.
+If any of these files are changed, all directories including the `target-file` are considered changed.
 Separate file paths with a newline.
 
 ## Outputs
@@ -24,21 +29,19 @@ The list of changed directories as a JSON string.
 
 ## Example usage
 
-This workflow runs `bundle exec rake` in every directory that has changed and includes `Gemfile`:
+This workflow runs `bundle exec rake` in every directory that has changed and includes `Gemfile.lock`:
 
 ```yaml
 on:
-  push:
-    branches: ["main"]
   pull_request:
     branches: ["main"]
 
 jobs:
-  list-target-dirs:
+  list-changed-directories:
     runs-on: ubuntu-latest
 
     outputs:
-      dirs: ${{ steps.list-changed-directories.outputs.changed-directories }}
+      changed-directories: ${{ steps.list-changed-directories.outputs.changed-directories }}
 
     steps:
       - uses: actions/checkout@v4
@@ -46,30 +49,28 @@ jobs:
       - uses: sankichi92/list-changed-directories@v1
         id: list-changed-directories
         with:
-          target-file: Gemfile
+          target-file: Gemfile.lock
           common-dependency-filepaths: |-
             .github/workflows/ruby.yml
 
   test:
-    needs: list-target-dirs
-    if: needs.list-target-dirs.outputs.dirs != '[]'
+    needs: list-changed-directories
+    if: needs.list-changed-directories.outputs.changed-directories != '[]'
 
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        dir: ${{ fromJSON(needs.list-target-dirs.outputs.dirs) }}
-
-    defaults:
-      run:
-        working-directory: ${{ matrix.dir }}
+        working-directory: ${{ fromJSON(needs.list-changed-directories.outputs.changed-directories) }}
 
     steps:
       - uses: actions/checkout@v4
 
       - uses: ruby/setup-ruby@v1
         with:
+          working-directory: ${{ matrix.working-directory }}
           bundler-cache: true
 
       - run: bundle exec rake
+        working-directory: ${{ matrix.working-directory }}
 ```
