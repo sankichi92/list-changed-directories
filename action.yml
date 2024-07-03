@@ -1,19 +1,23 @@
 name: list-changed-directories
-description: Outputs a list of changed directories that include a target file
+description: Outputs a list of directories that have changed and include a specified target file
 
 inputs:
   target-file:
-    description: Filename that the output directories must include
+    description: A filename that must be included in the output directories
     required: true
   common-dependency-filepaths:
     description: >-
-      File paths that all directories including target-file depend on. If any of these files are changed, all
-      directories including target-file are considered changed. Separate file paths with a newline.
+      File paths that all directories including the target-file depend on. If any of these files are changed,
+      all directories including the target-file are considered changed. Separate file paths with a newline.
 
 outputs:
   changed-directories:
-    description: List of changed directories as a JSON string
+    description: The list of changed directories as a JSON string.
 
 runs:
   using: node20
   main: dist/index.js
+
+branding:
+  icon: list
+  color: blue
