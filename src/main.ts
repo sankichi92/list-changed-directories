@@ -28,14 +28,14 @@ export async function run() {
     await gitFetch(baseSHA);
     core.endGroup();
 
-    const commonDependencyFilepaths = core.getMultilineInput(
-      "common-dependency-filepaths",
+    const commonDependencyPaths = core.getMultilineInput(
+      "common-dependency-paths",
     );
-    if (commonDependencyFilepaths.length > 0) {
-      core.startGroup("Checking diff for common dependency files");
+    if (commonDependencyPaths.length > 0) {
+      core.startGroup("Checking diff for common dependency paths");
       const isCommonDependencyChanged = await gitDiffExists(
         baseSHA,
-        commonDependencyFilepaths,
+        commonDependencyPaths,
       );
       core.endGroup();
 

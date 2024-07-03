@@ -30554,10 +30554,10 @@ async function run() {
         const baseSHA = (0, github_1.getBaseSHA)(github.context);
         await (0, git_1.gitFetch)(baseSHA);
         core.endGroup();
-        const commonDependencyFilepaths = core.getMultilineInput("common-dependency-filepaths");
-        if (commonDependencyFilepaths.length > 0) {
-            core.startGroup("Checking diff for common dependency files");
-            const isCommonDependencyChanged = await (0, git_1.gitDiffExists)(baseSHA, commonDependencyFilepaths);
+        const commonDependencyPaths = core.getMultilineInput("common-dependency-paths");
+        if (commonDependencyPaths.length > 0) {
+            core.startGroup("Checking diff for common dependency paths");
+            const isCommonDependencyChanged = await (0, git_1.gitDiffExists)(baseSHA, commonDependencyPaths);
             core.endGroup();
             if (isCommonDependencyChanged) {
                 core.info(`Any of the common dependency files have changed.`);

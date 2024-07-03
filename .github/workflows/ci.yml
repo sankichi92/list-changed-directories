@@ -51,5 +51,5 @@ jobs:
         uses: ./
         with:
           target-file: "*"
-          common-dependency-filepaths: |-
+          common-dependency-paths: |-
             action.yml
