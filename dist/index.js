@@ -30560,7 +30560,7 @@ async function run() {
             const isCommonDependencyChanged = await (0, git_1.gitDiffExists)(baseSHA, commonDependencyPaths);
             core.endGroup();
             if (isCommonDependencyChanged) {
-                core.info(`Any of the common dependency files have changed.`);
+                core.info("Any common dependency has changed.");
                 core.setOutput("changed-directories", candidateDirs);
                 return;
             }
