@@ -30465,8 +30465,9 @@ async function gitLsFiles(path) {
 async function gitFetch(sha) {
     await exec.exec("git", ["fetch", "--depth=1", "origin", sha]);
 }
-async function gitDiffExists(commit, path) {
-    const exitCode = await exec.exec("git", ["diff", "--exit-code", "--quiet", commit, "--", path], { ignoreReturnCode: true });
+async function gitDiffExists(commit, paths, quiet = false) {
+    const stdoutOption = quiet ? "--quiet" : "--name-only";
+    const exitCode = await exec.exec("git", ["diff", "--exit-code", stdoutOption, commit, "--", ...paths], { ignoreReturnCode: true });
     return exitCode !== 0;
 }
 
@@ -30553,8 +30554,19 @@ async function run() {
         const baseSHA = (0, github_1.getBaseSHA)(github.context);
         await (0, git_1.gitFetch)(baseSHA);
         core.endGroup();
-        core.startGroup("Comparing git diff");
-        const isChanged = await Promise.all(candidateDirs.map((dir) => (0, git_1.gitDiffExists)(baseSHA, dir)));
+        const commonDependencyFilepaths = core.getMultilineInput("common-dependency-filepaths");
+        if (commonDependencyFilepaths.length > 0) {
+            core.startGroup("Checking diff for common dependency files");
+            const isCommonDependencyChanged = await (0, git_1.gitDiffExists)(baseSHA, commonDependencyFilepaths);
+            core.endGroup();
+            if (isCommonDependencyChanged) {
+                core.info(`Any of the common dependency files have changed.`);
+                core.setOutput("changed-directories", candidateDirs);
+                return;
+            }
+        }
+        core.startGroup("Checking diff for candidate directories");
+        const isChanged = await Promise.all(candidateDirs.map((dir) => (0, git_1.gitDiffExists)(baseSHA, [dir], true)));
         const changedDirs = candidateDirs.filter((_, i) => isChanged[i]);
         core.endGroup();
         if (changedDirs.length === 0) {

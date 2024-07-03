@@ -28,9 +28,27 @@ export async function run() {
     await gitFetch(baseSHA);
     core.endGroup();
 
-    core.startGroup("Comparing git diff");
+    const commonDependencyFilepaths = core.getMultilineInput(
+      "common-dependency-filepaths",
+    );
+    if (commonDependencyFilepaths.length > 0) {
+      core.startGroup("Checking diff for common dependency files");
+      const isCommonDependencyChanged = await gitDiffExists(
+        baseSHA,
+        commonDependencyFilepaths,
+      );
+      core.endGroup();
+
+      if (isCommonDependencyChanged) {
+        core.info(`Any of the common dependency files have changed.`);
+        core.setOutput("changed-directories", candidateDirs);
+        return;
+      }
+    }
+
+    core.startGroup("Checking diff for candidate directories");
     const isChanged = await Promise.all(
-      candidateDirs.map((dir) => gitDiffExists(baseSHA, dir)),
+      candidateDirs.map((dir) => gitDiffExists(baseSHA, [dir], true)),
     );
     const changedDirs = candidateDirs.filter((_, i) => isChanged[i]);
     core.endGroup();
