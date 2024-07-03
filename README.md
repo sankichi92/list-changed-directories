@@ -10,6 +10,12 @@ This action can be used only on `push` and `pull_request` events.
 
 **Required**. A filename that must be included in the output directories.
 
+### `common-dependency-filepaths`
+
+File paths that all directories including `target-file` depend on.
+If any of these files are changed, all directories including `target-file` are considered changed.
+Separate file paths with a newline.
+
 ## Outputs
 
 ### `changed-directories`
@@ -41,6 +47,8 @@ jobs:
         id: list-changed-directories
         with:
           target-file: Gemfile
+          common-dependency-filepaths: |-
+            .github/workflows/ruby.yml
 
   test:
     needs: list-target-dirs

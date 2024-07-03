@@ -5,6 +5,10 @@ inputs:
   target-file:
     description: Filename that the output directories must include
     required: true
+  common-dependency-filepaths:
+    description: >-
+      File paths that all directories including target-file depend on. If any of these files are changed, all
+      directories including target-file are considered changed. Separate file paths with a newline.
 
 outputs:
   changed-directories:
