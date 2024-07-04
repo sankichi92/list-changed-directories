@@ -35,6 +35,8 @@ This workflow runs `bundle exec rake` in every directory that has changed and in
 on:
   pull_request:
     branches: ["main"]
+  push:
+    branches: ["main"]
 
 jobs:
   list-changed-directories:
