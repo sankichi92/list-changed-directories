@@ -17,7 +17,8 @@ jobs:
 
       - uses: actions/setup-node@v4.0.2
         with:
-          cache: "pnpm"
+          node-version-file: package.json
+          cache: pnpm
 
       - run: pnpm install
 
@@ -33,7 +34,8 @@ jobs:
 
       - uses: actions/setup-node@v4.0.2
         with:
-          cache: "pnpm"
+          node-version-file: package.json
+          cache: pnpm
 
       - run: pnpm install
 
