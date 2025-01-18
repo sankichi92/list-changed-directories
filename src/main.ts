@@ -25,6 +25,14 @@ export async function run() {
 
     core.startGroup("Fetching the base commit");
     const baseSHA = getBaseSHA(github.context);
+    if (baseSHA === null) {
+      core.endGroup();
+      core.info(
+        `No base commit found since "${github.context.ref}" was created by this push.`,
+      );
+      core.setOutput("changed-directories", candidateDirs);
+      return;
+    }
     await gitFetch(baseSHA);
     core.endGroup();
 

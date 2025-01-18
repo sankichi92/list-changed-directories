@@ -9,6 +9,12 @@ export function getBaseSHA(context: Context) {
     }
     case "push": {
       const payload = context.payload as PushEvent;
+
+      // https://github.com/sankichi92/list-changed-directories/issues/107
+      if (payload.created) {
+        return null;
+      }
+
       return payload.before;
     }
     default: {
