@@ -29974,6 +29974,10 @@ function getBaseSHA(context) {
         }
         case "push": {
             const payload = context.payload;
+            // https://github.com/sankichi92/list-changed-directories/issues/107
+            if (payload.created) {
+                return null;
+            }
             return payload.before;
         }
         default: {
@@ -30047,6 +30051,12 @@ async function run() {
         core.endGroup();
         core.startGroup("Fetching the base commit");
         const baseSHA = (0, github_1.getBaseSHA)(github.context);
+        if (baseSHA === null) {
+            core.endGroup();
+            core.info(`No base commit found since "${github.context.ref}" was created by this push.`);
+            core.setOutput("changed-directories", candidateDirs);
+            return;
+        }
         await (0, git_1.gitFetch)(baseSHA);
         core.endGroup();
         const commonDependencyPaths = core.getMultilineInput("common-dependency-paths");
