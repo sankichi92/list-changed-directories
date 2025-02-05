@@ -1,22 +1,4 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended", ":timezone(Asia/Tokyo)"],
-  "packageRules": [
-    {
-      "matchManagers": ["npm"],
-      "matchDepTypes": ["dependencies", "devDependencies"],
-      "enabled": false
-    },
-    {
-      "matchManagers": ["github-actions"],
-      "enabled": false
-    },
-    {
-      "matchUpdateTypes": ["patch"],
-      "automerge": true
-    }
-  ],
-  "prHourlyLimit": 10,
-  "schedule": ["* 20-23 * * 5"],
-  "labels": ["dependencies"]
+  "extends": ["local>sankichi92/renovate-config"]
 }
