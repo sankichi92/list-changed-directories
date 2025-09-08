@@ -16,7 +16,6 @@ jobs:
       - uses: actions/setup-node@v5.0.0
         with:
           node-version-file: package.json
-          cache: pnpm
 
       - run: pnpm install
 
@@ -33,7 +32,6 @@ jobs:
       - uses: actions/setup-node@v5.0.0
         with:
           node-version-file: package.json
-          cache: pnpm
 
       - run: pnpm install
 
