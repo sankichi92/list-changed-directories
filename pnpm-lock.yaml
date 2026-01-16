@@ -15,8 +15,8 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
       '@actions/github':
-        specifier: ^6.0.1
-        version: 6.0.1
+        specifier: ^7.0.0
+        version: 7.0.0
     devDependencies:
       '@eslint/js':
         specifier: ^9.39.2
@@ -41,7 +41,7 @@ importers:
         version: 17.0.0
       node:
         specifier: runtime:^24.12.0
-        version: runtime:24.12.0
+        version: runtime:24.13.0
       prettier:
         specifier: ^3.7.4
         version: 3.7.4
@@ -60,14 +60,14 @@ packages:
   '@actions/exec@2.0.0':
     resolution: {integrity: sha512-k8ngrX2voJ/RIN6r9xB82NVqKpnMRtxDoiO+g3olkIUpQNqjArXrCQceduQZCQj3P3xm32pChRLqRrtXTlqhIw==}
 
-  '@actions/github@6.0.1':
-    resolution: {integrity: sha512-xbZVcaqD4XnQAe35qSQqskb3SqIAfRyLBrHMd/8TuL7hJSz2QtbDwnNM8zWx4zO5l2fnGtseNE3MbEvD7BxVMw==}
-
-  '@actions/http-client@2.2.3':
-    resolution: {integrity: sha512-mx8hyJi/hjFvbPokCg4uRd4ZX78t+YyRPtnKWwIl+RzNaVuFpQHfmlGVfsKEJN8LwTCvL+DfVgAM04XaHkm6bA==}
+  '@actions/github@7.0.0':
+    resolution: {integrity: sha512-PyGODO938aoBTZd/IfN/+e+Pd5hUcVpyf+thm4CPESLeqhdSkq5QwMTGX9v84XHE1ifmHWBQ60KB8kIgm96opw==}
 
   '@actions/http-client@3.0.0':
     resolution: {integrity: sha512-1s3tXAfVMSz9a4ZEBkXXRQD4QhY3+GAsWSbaYpeknPOKEeyRiU3lH+bHiLMZdo2x/fIeQ/hscL1wCkDLVM2DZQ==}
+
+  '@actions/http-client@3.0.1':
+    resolution: {integrity: sha512-SbGS8c/vySbNO3kjFgSW77n83C4MQx/Yoe+b1hAdpuvfHxnkHzDq2pWljUpAA56Si1Gae/7zjeZsV0CYjmLo/w==}
 
   '@actions/io@2.0.0':
     resolution: {integrity: sha512-Jv33IN09XLO+0HS79aaODsvIRyduiF7NY/F6LYeK5oeUmrsz7aFdRphQjFoESF4jS7lMauDOttKALcpapVDIAg==}
@@ -140,8 +140,8 @@ packages:
     resolution: {integrity: sha512-tY/msAuJo6ARbK6SPIxZrPBms3xPbfwBrulZe0Wtr/DIY9lje2HeV1uoebShn6mx7SjCHif6EjMvoREj+gZ+SA==}
     engines: {node: '>= 18'}
 
-  '@octokit/core@5.2.1':
-    resolution: {integrity: sha512-dKYCMuPO1bmrpuogcjQ8z7ICCH3FP6WmxpwC03yjzGfZhj9fTJg6+bS1+UAplekbN2C+M61UNllGOOoAfGCrdQ==}
+  '@octokit/core@5.2.2':
+    resolution: {integrity: sha512-/g2d4sW9nUDJOMz3mabVQvOGhVa4e/BN/Um7yca9Bb2XTzPPnfTWHWQg+IsEYO7M3Vx+EXvaM/I2pJWIMun1bg==}
     engines: {node: '>= 18'}
 
   '@octokit/endpoint@9.0.6':
@@ -496,94 +496,94 @@ packages:
   natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
 
-  node@runtime:24.12.0:
+  node@runtime:24.13.0:
     resolution:
       type: variations
       variants:
         - resolution:
             archive: tarball
             bin: bin/node
-            integrity: sha256-MfPQZbuE8GnlIuVdDTA1vTZMul2KIiM/9oAF0oHou3g=
+            integrity: sha256-rCHprwik1UsFfYAMA7yVMilGlSuNqoEcramL+2aozo8=
             type: binary
-            url: https://nodejs.org/download/release/v24.12.0/node-v24.12.0-aix-ppc64.tar.gz
+            url: https://nodejs.org/download/release/v24.13.0/node-v24.13.0-aix-ppc64.tar.gz
           targets:
             - cpu: ppc64
               os: aix
         - resolution:
             archive: tarball
             bin: bin/node
-            integrity: sha256-MZ8iGtxeRP8O1X6KRBsihPArjcb8h7jrkqapNkP9gIA=
+            integrity: sha256-1ZWWHlY/yuBX1KD7mS8XWlTZf8xKFNwtR02S3e6jufg=
             type: binary
-            url: https://nodejs.org/download/release/v24.12.0/node-v24.12.0-darwin-arm64.tar.gz
+            url: https://nodejs.org/download/release/v24.13.0/node-v24.13.0-darwin-arm64.tar.gz
           targets:
             - cpu: arm64
               os: darwin
         - resolution:
             archive: tarball
             bin: bin/node
-            integrity: sha256-uC6kxi/QjiUMq1nWJeddd8xbCj1gxmmOvuRUXIihacU=
+            integrity: sha256-bwPBtI3b4bEppvgDi+COCJnwXxcYW00+Q1AYCrZpp/M=
             type: binary
-            url: https://nodejs.org/download/release/v24.12.0/node-v24.12.0-darwin-x64.tar.gz
+            url: https://nodejs.org/download/release/v24.13.0/node-v24.13.0-darwin-x64.tar.gz
           targets:
             - cpu: x64
               os: darwin
         - resolution:
             archive: tarball
             bin: bin/node
-            integrity: sha256-myou65io6zc2EiTiodBgMArS3RQ69Y39sW3nhd8PEig=
+            integrity: sha256-D21AuUxqLra0wkD/yLn9Otp6sETBd91BPAbh75pj8IE=
             type: binary
-            url: https://nodejs.org/download/release/v24.12.0/node-v24.12.0-linux-arm64.tar.gz
+            url: https://nodejs.org/download/release/v24.13.0/node-v24.13.0-linux-arm64.tar.gz
           targets:
             - cpu: arm64
               os: linux
         - resolution:
             archive: tarball
             bin: bin/node
-            integrity: sha256-Zux5tNZPQQmu34IhCHFdC2CXEY35FZwvYyFHfaTqF6o=
+            integrity: sha256-GAEZMLGCocW0nSMmGR/bpYJwvfe0W4x9+FXvMZMbFIo=
             type: binary
-            url: https://nodejs.org/download/release/v24.12.0/node-v24.12.0-linux-ppc64le.tar.gz
+            url: https://nodejs.org/download/release/v24.13.0/node-v24.13.0-linux-ppc64le.tar.gz
           targets:
             - cpu: ppc64le
               os: linux
         - resolution:
             archive: tarball
             bin: bin/node
-            integrity: sha256-jclgolVdsap3/RMcJb5XG594RLyLJ454cyufWA/n1YA=
+            integrity: sha256-V0RhC2JPLoKuHKJ52OznuMpGZDcjlTPS0DNWUwO8HTk=
             type: binary
-            url: https://nodejs.org/download/release/v24.12.0/node-v24.12.0-linux-s390x.tar.gz
+            url: https://nodejs.org/download/release/v24.13.0/node-v24.13.0-linux-s390x.tar.gz
           targets:
             - cpu: s390x
               os: linux
         - resolution:
             archive: tarball
             bin: bin/node
-            integrity: sha256-YVkifgr318PGuy+pAEUrBKbLiEGnAqeazGEyCdcLBNA=
+            integrity: sha256-YiOq0agfnR57aCxZ0S4t4jP3tMN0dc1A0cicQrc3/6g=
             type: binary
-            url: https://nodejs.org/download/release/v24.12.0/node-v24.12.0-linux-x64.tar.gz
+            url: https://nodejs.org/download/release/v24.13.0/node-v24.13.0-linux-x64.tar.gz
           targets:
             - cpu: x64
               os: linux
         - resolution:
             archive: zip
             bin: node.exe
-            integrity: sha256-sF5+Bm+BPTWtPNnCTu2u4HTAEqx+AAcSl2CP3S6UiuM=
-            prefix: node-v24.12.0-win-arm64
+            integrity: sha256-krn5sMDBI+EeSvxTXw7BnNmHRl7qUGQnVTpJlxNkFYo=
+            prefix: node-v24.13.0-win-arm64
             type: binary
-            url: https://nodejs.org/download/release/v24.12.0/node-v24.12.0-win-arm64.zip
+            url: https://nodejs.org/download/release/v24.13.0/node-v24.13.0-win-arm64.zip
           targets:
             - cpu: arm64
               os: win32
         - resolution:
             archive: zip
             bin: node.exe
-            integrity: sha256-nBJfYa6Ue1LneQlYMPnKwmeEagQ+9xkhg8hAFqqtKBI=
-            prefix: node-v24.12.0-win-x64
+            integrity: sha256-yidCaVvo3kQCfXGz9TpL2zYAm5VXX+Gub38LXOCRy4g=
+            prefix: node-v24.13.0-win-x64
             type: binary
-            url: https://nodejs.org/download/release/v24.12.0/node-v24.12.0-win-x64.zip
+            url: https://nodejs.org/download/release/v24.13.0/node-v24.13.0-win-x64.zip
           targets:
             - cpu: x64
               os: win32
-    version: 24.12.0
+    version: 24.13.0
     hasBin: true
 
   once@1.4.0:
@@ -725,22 +725,22 @@ snapshots:
     dependencies:
       '@actions/io': 2.0.0
 
-  '@actions/github@6.0.1':
+  '@actions/github@7.0.0':
     dependencies:
-      '@actions/http-client': 2.2.3
-      '@octokit/core': 5.2.1
-      '@octokit/plugin-paginate-rest': 9.2.2(@octokit/core@5.2.1)
-      '@octokit/plugin-rest-endpoint-methods': 10.4.1(@octokit/core@5.2.1)
+      '@actions/http-client': 3.0.1
+      '@octokit/core': 5.2.2
+      '@octokit/plugin-paginate-rest': 9.2.2(@octokit/core@5.2.2)
+      '@octokit/plugin-rest-endpoint-methods': 10.4.1(@octokit/core@5.2.2)
       '@octokit/request': 8.4.1
       '@octokit/request-error': 5.1.1
       undici: 5.29.0
 
-  '@actions/http-client@2.2.3':
+  '@actions/http-client@3.0.0':
     dependencies:
       tunnel: 0.0.6
       undici: 5.29.0
 
-  '@actions/http-client@3.0.0':
+  '@actions/http-client@3.0.1':
     dependencies:
       tunnel: 0.0.6
       undici: 5.29.0
@@ -813,7 +813,7 @@ snapshots:
 
   '@octokit/auth-token@4.0.0': {}
 
-  '@octokit/core@5.2.1':
+  '@octokit/core@5.2.2':
     dependencies:
       '@octokit/auth-token': 4.0.0
       '@octokit/graphql': 7.1.1
@@ -838,14 +838,14 @@ snapshots:
 
   '@octokit/openapi-types@24.2.0': {}
 
-  '@octokit/plugin-paginate-rest@9.2.2(@octokit/core@5.2.1)':
+  '@octokit/plugin-paginate-rest@9.2.2(@octokit/core@5.2.2)':
     dependencies:
-      '@octokit/core': 5.2.1
+      '@octokit/core': 5.2.2
       '@octokit/types': 12.6.0
 
-  '@octokit/plugin-rest-endpoint-methods@10.4.1(@octokit/core@5.2.1)':
+  '@octokit/plugin-rest-endpoint-methods@10.4.1(@octokit/core@5.2.2)':
     dependencies:
-      '@octokit/core': 5.2.1
+      '@octokit/core': 5.2.2
       '@octokit/types': 12.6.0
 
   '@octokit/request-error@5.1.1':
@@ -1197,7 +1197,7 @@ snapshots:
 
   natural-compare@1.4.0: {}
 
-  node@runtime:24.12.0: {}
+  node@runtime:24.13.0: {}
 
   once@1.4.0:
     dependencies:
