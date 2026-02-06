@@ -29,7 +29,7 @@
     "@vercel/ncc": "^0.38.4",
     "eslint": "9.x",
     "eslint-config-prettier": "^10.1.8",
-    "globals": "^17.1.0",
+    "globals": "^17.3.0",
     "prettier": "^3.8.1",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.54.0"
