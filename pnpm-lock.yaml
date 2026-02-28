@@ -15,8 +15,8 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
       '@actions/github':
-        specifier: ^8.0.0
-        version: 8.0.0
+        specifier: ^9.0.0
+        version: 9.0.0
     devDependencies:
       '@eslint/js':
         specifier: ^9.39.2
@@ -60,8 +60,8 @@ packages:
   '@actions/exec@2.0.0':
     resolution: {integrity: sha512-k8ngrX2voJ/RIN6r9xB82NVqKpnMRtxDoiO+g3olkIUpQNqjArXrCQceduQZCQj3P3xm32pChRLqRrtXTlqhIw==}
 
-  '@actions/github@8.0.0':
-    resolution: {integrity: sha512-bBukvVRvIf7NshWEXFVnBaXs/ZyGzDvx+jbB5AdJij9CUG4VFEYJJD6T6y06dDkuULalQQUNvKXIH71yqw7SoQ==}
+  '@actions/github@9.0.0':
+    resolution: {integrity: sha512-yJ0RoswsAaKcvkmpCE4XxBRiy/whH2SdTBHWzs0gi4wkqTDhXMChjSdqBz/F4AeiDlP28rQqL33iHb+kjAMX6w==}
 
   '@actions/http-client@3.0.0':
     resolution: {integrity: sha512-1s3tXAfVMSz9a4ZEBkXXRQD4QhY3+GAsWSbaYpeknPOKEeyRiU3lH+bHiLMZdo2x/fIeQ/hscL1wCkDLVM2DZQ==}
@@ -646,7 +646,7 @@ snapshots:
     dependencies:
       '@actions/io': 2.0.0
 
-  '@actions/github@8.0.0':
+  '@actions/github@9.0.0':
     dependencies:
       '@actions/http-client': 3.0.2
       '@octokit/core': 7.0.6
@@ -654,7 +654,7 @@ snapshots:
       '@octokit/plugin-rest-endpoint-methods': 17.0.0(@octokit/core@7.0.6)
       '@octokit/request': 10.0.7
       '@octokit/request-error': 7.1.0
-      undici: 5.29.0
+      undici: 6.23.0
 
   '@actions/http-client@3.0.0':
     dependencies:
