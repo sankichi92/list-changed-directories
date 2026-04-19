@@ -1,7 +1,11 @@
-import type { Context } from "@actions/github/lib/context";
 import type { PullRequestEvent, PushEvent } from "@octokit/webhooks-types";
 
-export function getBaseSHA(context: Context) {
+type GitHubContext = {
+  eventName: string;
+  payload: unknown;
+};
+
+export function getBaseSHA(context: GitHubContext) {
   switch (context.eventName) {
     case "pull_request": {
       const payload = context.payload as PullRequestEvent;
