@@ -11,7 +11,7 @@
       "onFail": "download"
     }
   },
-  "packageManager": "pnpm@11.27.1+sha512.a81d4c21b9b09a4b0aebf90ef5e527d4262bdda322d26082978cb549023ac6d9cafc98b19fffaa5c71db438a65f70224edb78d7311187861ff96480d1cdca23c",
+  "packageManager": "pnpm@12.7.0+sha512.9c56477e360068d6e9dca6a92efb4e46b3dc5a52fcebf3d84d78b9736c0ded589a561621a52f68219a7a39facc63cdc079c3226ef9c9d5f02b79f74e69a807b6",
   "scripts": {
     "build": "ncc build src/index.ts --source-map --license licenses.txt",
     "fmt": "prettier --write .",
